@@ -6,6 +6,10 @@ classDiagram
     Schedule *-- Event
     Runner *-- AccountManager
     Runner *-- Pickler
+    Pickler ..> AccountManager
+    UserInterface ..> Schedule
+    UserInterface ..> User
+    UserInterface ..> Event
 
     class Pickler{
         +bool file_exists
@@ -42,25 +46,28 @@ classDiagram
 
     class Event{
         +str name
-        +str description
         +int day
+        +str description
         +tuple<int, int> start
         +tuple<int, int> end
         +datetime time
+        +str key
         +__init__(self, name,day, start, end, description)
-        +createKey(self) function~x~
+        +get_key(self)
+
     }
 
     class UserInterface{
 
         +welcome_screen() int
-        +register_screen() tuple~name_userid_password~
+        +register_screen() User
         +login_screen() userid password
         +main_menu() int
         +display_schedule(schedule)
         +event_manager_screen() int
-        +add_event_menu() tuple~name_day+start_end_description~
-        +delete_event_menu(user) event
+        +add_event_menu() Event
+        +delete_event_menu(schedule) str
+        +display_users(List<User>)
     }
 
     class Runner{
