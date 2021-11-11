@@ -6,3 +6,4 @@ class Pickler:
 
     def load(self):
         pass
+        #getTest
