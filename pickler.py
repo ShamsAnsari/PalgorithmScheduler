@@ -1,6 +1,8 @@
 import os
 import pickle
 
+from AccountManager import *
+
 class Pickler:
     def __init__(self):
         self.path = os.getcwd()
@@ -9,11 +11,9 @@ class Pickler:
         pickle.dump(account_manager, open("acc.pickle", "wb"))
 
     def load(self):
-        try:
-            file = pickle.load(open( "acc.pickle", "rb" ))
-            return file
-        except FileNotFoundError:
-            print("File does not exist in the CWD")
+        if self.doesFileExist():
+            return pickle.load(open( "acc.pickle", "rb" ))
+        return AccountManager()
     
     def doesFileExist(self):
         try:
