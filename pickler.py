@@ -5,6 +5,7 @@ from AccountManager import *
 
 class Pickler:
     def __init__(self):
+        self.file_exists = self.doesFileExist()
         self.path = os.getcwd()
 
     def save(self, account_manager):
