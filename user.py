@@ -7,7 +7,7 @@ class User:
         self.password = password
         self.schedule = Schedule()
     
-    def __eq__(self, other): #compares two users and returns True if they match
+    def __eq__(self, other): #compares two users and returns True if they match (verification)
         return self.userid == other.userid
 
         
