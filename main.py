@@ -13,12 +13,12 @@ class Window(tk.Tk):
         self.title("De Anza College Scheduler")
         self.geometry("500x500+300+200")
 
-        #self.p = Pickler() #create pickler
-        #self.user = None
-        #if self.p.file_exists:
-        #    self.am = self.p.load() #load account manager
-        #else:
-        self.am = AccountManager()
+        self.p = Pickler() #create pickler
+        self.user = None
+        if self.p.doesFileExist():
+            self.am = self.p.load() #load account manager
+        else:
+            self.am = AccountManager()
 
         self.frame = None
         self.welcome_screen()
@@ -50,8 +50,9 @@ class Window(tk.Tk):
         reg['pass'].grid(row=2, column=1, padx=10, pady=10)
 
         command = lambda: self.reg_callback(reg)
-        self.bind('<Return>', command)
-        tk.Button(frame, text="REGISTER", command=command).grid(row=3, column=1, padx=10, pady=10)
+        self.bind('<Return>', lambda x: command)
+        tk.Button(frame, text="Register", command=command).grid(row=3, column=1, padx=10, pady=10)
+        tk.Button(frame, text="Back", command=self.welcome_screen).grid(row=4, column=1, padx=10, pady=10);
 
         self.change_frame(frame)
     
@@ -66,7 +67,7 @@ class Window(tk.Tk):
         frame.pack()
         id, pwd = log['user'].get(), log['pass'].get()
         if self.am.check_credentials(id, pwd):
-            self.user = self.am.get_user(id, pwd)
+            self.user = self.am.get_user(id)
             self.main_menu()
         else:
             tk.Label(frame, text="Please re-check your user ID/ Password").pack()
@@ -82,8 +83,9 @@ class Window(tk.Tk):
         log['pass'].grid(row=1, column=1, padx=10, pady=10)
 
         command = lambda: self.log_callback(log)
-        self.bind('<Return>', command)
+        self.bind('<Return>', lambda x: command)
         tk.Button(frame, text="Login", command=command).grid(row=2, column=1, padx=10, pady=10)
+        tk.Button(frame, text="Back", command=self.welcome_screen).grid(row=3, column=1, padx=10, pady=10)
 
         self.change_frame(frame)
 
@@ -92,10 +94,10 @@ class Window(tk.Tk):
         tk.Label(frame,
                   text="Welcome to the De Anza College Scheduler!\n").pack()
         tk.Button(frame,
-                  text="ADD the schedule",
+                  text="ADD Event",
                   command=self.add_schedule).pack()
         tk.Button(frame,
-                  text="DELETE the schedule",
+                  text="DELETE Event",
                   command=self.delete_schedule).pack()
         tk.Button(frame,
                   text="DISPLAY the schedule",
@@ -111,45 +113,58 @@ class Window(tk.Tk):
         frame = tk.Frame(self)
         
         add = dict()
+        tk.Label(frame, text="Name: ").grid(row=0, column=0, padx=10, pady=10)
+        tk.Label(frame, text="Day: ").grid(row=1, column=0, padx=10, pady=10)
+        tk.Label(frame, text="Start: ").grid(row=2, column=0, padx=10, pady=10)
+        tk.Label(frame, text="End: ").grid(row=3, column=0, padx=10, pady=10)
+        tk.Label(frame, text="Description: ").grid(row=4, column=0, padx=10, pady=10)
         add['name'] = tk.Entry(frame, text='name')
+        add['name'].grid(row=0, column=1, padx=10, pady=10)
         add['day'] = tk.Entry(frame, text='day')
+        add['day'].grid(row=1, column=1, padx=10, pady=10)
         add['start'] = tk.Entry(frame, text='start')
+        add['start'].grid(row=2, column=1, padx=10, pady=10)
         add['end'] = tk.Entry(frame, text='end')
+        add['end'].grid(row=3, column=1, padx=10, pady=10)
         add['description'] = tk.Entry(frame, text='description')
+        add['description'].grid(row=4, column=1, padx=10, pady=10)
 
-        for i in add.values():
-            i.pack()
+        
         
         command = lambda : self.schedule_callback(add)
-        self.bind('<Return>', command)
-        tk.Button(frame, text="Add", command=command).pack()
-        tk.Button(frame, text="Back to main", command=self.main_menu).pack()
+        self.bind('<Return>', lambda x: command)
+        tk.Button(frame, text="Add", command=command).grid(row=5, column=1, padx=10, pady=10)
+        tk.Button(frame, text="Back to main", command=self.main_menu).grid(row=6, column=1, padx=10, pady=10)
         self.change_frame(frame)
-        print("ADDED SOMETHING")
     
     def schedule_callback(self, add):
-        event = Event(add['name'], add['day'], add['start'], add['end'], add['description'])
+        event = Event(add['name'].get(), add['day'].get(), add['start'].get(), add['end'].get(), add['description'].get())
         self.user.schedule.add_event(event)
+        print('here')
         self.main_menu()
 
     def delete_schedule(self):
         frame = tk.Frame(self)
+        tk.Label(frame, text="Name: ").grid(row=0, column=0, padx=10, pady=10)
         entry = tk.Entry(frame)
-        entry.pack()
+        entry.grid(row=0, column=1, padx=10, pady=10)
         command = lambda: self.delete_callback(entry, frame)
-        self.bind('<Return>', command)
-        tk.Button(frame, text="Delete", command=command).pack()
-        tk.Button(frame, text="Back to main", command=self.main_menu).pack()
+        self.bind('<Return>', lambda x: command)
+        tk.Button(frame, text="Delete", command=command).grid(row=1, column=1, padx=10, pady=10)
+        tk.Button(frame, text="Back to main", command=self.main_menu).grid(row=2, column=1, padx=10, pady=10)
         self.change_frame(frame)
         print("DELETED SOMETHING")
 
     def delete_callback(self, entry, frame):
         name = entry.get()
+        state = True
         for i in self.user.schedule.events:
             if name.lower() == i.name.lower():
                 self.user.schedule.delete_event(i)
                 self.main_menu()
-        tk.Label(frame, text='Could not find event').pack()
+                state = False
+        if state:
+            tk.Label(frame, text='Could not find event').grid(row=3, column=1, padx=10, pady=10)
 
     def display_schedule(self):
         frame = tk.Frame(self)
@@ -204,7 +219,6 @@ class Window(tk.Tk):
 
 
 def main():
-    print("it worked")
     window = Window()
     window.mainloop()
 

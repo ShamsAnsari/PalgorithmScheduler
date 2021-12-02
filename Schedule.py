@@ -15,6 +15,9 @@ class Schedule:
         return self.events[index]
     
     def __str__(self):
+        s = "";
         for ev in self.events: #Show schedule
             print(ev)
+            s += str(ev) + '\n';
+        return s
 
